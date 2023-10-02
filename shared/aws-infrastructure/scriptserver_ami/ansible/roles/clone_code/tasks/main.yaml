@@ -1,0 +1,56 @@
+---
+- name: Return motd to registered var
+  command: ssh-keyscan -t rsa gitlab.shared.valoraws.com >> /root/.ssh/known_hosts
+  become_user: script
+
+- name: Creates directory for the (rcpt_test)
+  file:
+    path: "{{SCRIPT_PROJECT_DIR}}redis_cdc_test/"
+    state: directory
+  become_user: script
+
+- name: Clone the code from the Repo (redis_cdc_test)
+  ansible.builtin.git:
+    repo: git@gitlab.shared.valoraws.com:valor/redis_cdc_test.git
+    dest: "{{SCRIPT_PROJECT_DIR}}redis_cdc_test/"
+    version: redis_test
+    accept_hostkey: true
+  become_user: script
+
+- name: Creates directory for the python logs
+  file:
+    path: "{{SCRIPT_PROJECT_DIR}}redis_cdc_test/python/logs"
+    state: directory
+  become_user: script
+
+- name: Change file permissions under /home/script/redis_cdc_test/maxwell_redis/bin/
+  file:
+    path: "{{SCRIPT_PROJECT_DIR}}redis_cdc_test/maxwell_redis/bin/"
+    mode: '0755'
+    recurse: yes
+
+- name: restart service httpd
+  service:
+    name: httpd
+    state: restarted
+
+- name: Creates directory for the (switch_scripts)
+  file:
+    path: "{{SCRIPT_PROJECT_DIR}}switch_scripts/"
+    state: directory
+  become_user: root
+
+- name: Clone the code from the Repo (switch_scripts)
+  ansible.builtin.git:
+    repo: git@gitlab.shared.valoraws.com:valor/switch_scripts.git
+    dest: "{{SCRIPT_PROJECT_DIR}}switch_scripts"
+    version: main
+    accept_hostkey: true
+  become_user: root
+
+- name: Creates directory for the switch app 
+  file:
+    path: "{{ SWITCH_PROJECT_DIR }}"
+    state: directory
+  become_user: switch
+

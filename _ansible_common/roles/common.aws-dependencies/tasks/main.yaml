@@ -1,0 +1,10 @@
+- name: "Install pip packages for running amazon ansible modules"
+  ansible.builtin.pip:
+    name:
+      - "boto"
+      - "boto3"
+      - "botocore"
+      - "awscli"
+    state: "present"
+    executable: pip3
+    extra_args: --user

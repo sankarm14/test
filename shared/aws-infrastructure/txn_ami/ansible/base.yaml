@@ -1,0 +1,20 @@
+---
+- hosts:
+    - prod
+  become: yes
+  become_user: root
+  gather_facts: yes
+  roles:
+    - common.python36
+    - common.pip3
+    - common.aws-dependencies
+    - common.ssm
+    - common.unzip
+    - common.timezone
+    - common.git
+    - common.wget
+    - common.curl
+    - common.openssl
+    - common.mod_ssl
+    - txn_packages
+    

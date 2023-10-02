@@ -1,0 +1,5 @@
+---
+- name: "Upgrade pip3"
+  command: "sudo python3 -m pip install --upgrade pip"
+  become: yes
+  become_user: root

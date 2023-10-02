@@ -1,0 +1,64 @@
+---
+- name: Put SELinux in permissive mode, logging actions that would be blocked.
+  selinux:
+    policy: targeted
+    state: permissive
+  become_user: root
+
+- name: Install the latest version of Nginx
+  yum:
+    name: nginx
+    state: latest
+
+- name: Start service Nginx, if not started
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+  become_user: root
+
+- name: Create Config files for portal
+  template:
+    src: portal.conf.j2
+    dest: /etc/nginx/conf.d/portal.conf
+  become_user: root
+
+- name: Create Config files for Old portal
+  template:
+    src: old-portal.config.j2
+    dest: /etc/nginx/conf.d/old-portal.conf
+  become_user: root
+
+- name: Create Config files for Flamingo
+  template:
+    src: flamingo.conf.j2
+    dest: /etc/nginx/conf.d/flamingo.conf
+  become_user: root
+
+- name: Create Config files for Old Flamingo
+  template:
+    src: old-flamingo.conf.j2
+    dest: /etc/nginx/conf.d/old-flamingo.conf
+  become_user: root
+
+- name: Create Config files for default
+  template:
+    src: 00-default.conf.j2
+    dest: /etc/nginx/conf.d/00-default.conf
+  become_user: root
+
+# Copy SSL certificate files
+- name: Copy certificates files
+  ansible.builtin.copy:
+    src: ../files/certs/
+    dest: /etc/pki/tls/certs/
+    owner: root
+    group: root
+    mode: "0644"
+  become_user: root
+
+- name: restart nginx
+  service:
+    name: nginx
+    state: restarted
+  ignore_errors: true

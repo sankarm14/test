@@ -1,0 +1,10 @@
+---
+- hosts:
+    - dev
+  become: yes
+  become_user: root
+  gather_facts: yes
+  roles:
+    - clone_code
+    - bo2_config
+    

@@ -1,0 +1,55 @@
+server {
+  listen {{ SERVER_PORT }} ssl http2;
+  listen [::]:{{ SERVER_PORT }} ssl http2;
+  server_name {{ PORTAL_SERVER_NAME }};
+  root /usr/share/nginx/html;
+
+  ssl_certificate {{ SSL_FILE_PATH_PRIMARY }};
+  ssl_certificate_key {{ SSL_KEY_PATH_PRIMARY }};
+
+  ssl_session_cache shared:SSL:1m;
+  ssl_session_timeout 10m;
+  ssl_ciphers ECDH+AESGCM:DH+3DES:!CBC:!ADH:!AECDH:!MD5;
+  ssl_prefer_server_ciphers on;
+  
+  client_max_body_size 50M;
+
+  # Load configuration files for the default server block.
+  include /etc/nginx/default.d/*.conf;
+
+  location / {
+    proxy_connect_timeout {{ PROXY_TIMEOUT_SECONDS }};
+    proxy_send_timeout {{ PROXY_TIMEOUT_SECONDS }};
+    proxy_read_timeout {{ PROXY_TIMEOUT_SECONDS }};
+    send_timeout {{ SEND_TIMEOUT_SECONDS }};
+    proxy_pass http://localhost:{{ PORTAL_PORT }};
+    proxy_cookie_path / "/; HTTPOnly; Secure";
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_set_header Host $host;
+    proxy_cache_bypass $http_upgrade;
+  }
+
+  # Security header
+  proxy_cookie_path / "/; HTTPOnly;   Secure";
+  add_header Feature-Policy "geolocation none;midi none;notifications none;push none;sync-xhr none;microphone none;camera none;magnetometer none;gyroscope none;speaker self;vibrate none;fullscreen self;";
+  add_header Permissions-Policy "geolocation none;midi none;notifications none;sync-xhr none;microphone none;camera none;magnetometer none;gyroscope none;speaker self;fullscreen self;";
+  add_header X-XSS-Protection "1; mode=block" always;
+  add_header X-Frame-Options SAMEORIGIN always;
+  add_header X-Content-Type-Options "nosniff" always;
+  add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+  add_header Public-Key-Pins 'pin-sha256="FGx6jUDsvER99sSJrNdheIN2lFrc1plI4eBTRdN565o="; max-age=2592000; includeSubDomains';
+  add_header Content-Security-Policy "script-src 'self' 'unsafe-inline' 'unsafe-eval'  data: https://cdnjs.cloudflare.com https://maps.googleapis.com https://www.googletagmanager.com https://fonts.googleapis.com https://portal.valorpaytech.com https://demo.valorpaytech.com https://fonts.gstatic.com https://www.google-analytics.com https://curious-sandbox-196209.firebaseio.com https://ziptasticapi.com https://code.tidio.co https://widget-v4.tidiochat.com https://www.google.com https://www.gstatic.com";
+  add_header X-Permitted-Cross-Domain-Policies master-only;
+  add_header Referrer-Policy same-origin;
+
+
+  error_page 404 /404.html;
+  location = /40x.html {
+  }
+
+  error_page 500 502 503 504 /50x.html;
+  location = /50x.html {
+  }
+}

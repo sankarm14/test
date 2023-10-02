@@ -1,0 +1,44 @@
+---
+#- name: Install epel repo
+#  ansible.builtin.command: yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+#  become_user: root
+
+- name: "Install script server packages"
+  yum:
+    name:
+      - stunnel
+      - haproxy
+    state: present
+    lock_timeout: 180
+
+- name: Install pymysql and redis packages
+  command: "{{ item }}"
+  with_items:
+    - "pip3 install pymysql"
+    - "pip3 install redis"
+
+- name: Copy haproxy
+  template: 
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+
+- name: Copy stunnel
+  template: 
+    src: haproxy.cfg.j2
+    dest: /etc/stunnel/haproxy.cfg
+
+#- name: Put SELinux in permissive mode, logging actions that would be blocked.
+#  selinux:
+#    policy: targeted
+#    state: permissive
+
+#- name: start HAProxy service
+#  systemd:
+#    name: haproxy
+#    state: started
+
+#- name: Start the haproxy service
+#  service:
+#    name: haproxy
+#    state: started
+#    enabled: yes

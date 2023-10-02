@@ -1,0 +1,36 @@
+pipeline {
+  agent any
+
+  environment {
+        AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY_ID_SHARED')
+        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY_SHARED')
+        AWS_DEFAULT_REGION    = "us-east-1"
+        DIR                   = "shared/aws-infrastructure/backoffice_1_ami/packer"
+    }
+  parameters {
+        choice(
+            name: 'State',
+            choices: ['Dev', 'Staging','Prod'],
+            description: 'The action to take'
+        )
+    }
+
+  stages {
+    stage('Packer - Build') {
+      steps {
+        script {
+            dir ("${env.WORKSPACE}/${env.DIR}") {
+                packerBuild()
+            }
+        }
+      }
+    }
+  }
+}
+def packerBuild() {
+    sh("""
+        #!/bin/bash
+        /usr/local/bin/packer init .
+        /usr/local/bin/packer build -var "environment = ${params.State}" app.pkr.hcl.
+    """)
+}

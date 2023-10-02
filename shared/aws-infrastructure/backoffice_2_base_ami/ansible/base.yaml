@@ -1,0 +1,25 @@
+---
+- hosts:
+    - dev
+  become: yes
+  become_user: root
+  gather_facts: yes
+  roles:
+    - common.python36
+    - common.pip3
+    - common.aws-dependencies
+    - common.ssm
+    - common.unzip
+    - common.timezone
+    - common.git
+    - common.wget
+    - common.curl
+    - common.openssl
+    - common.mod_ssl
+    - common.ssh_key
+    - php82
+    - httpd
+    - create_user
+    - efs_utils
+    - bo2_packages
+ 

@@ -1,0 +1,19 @@
+---
+# Common SERVER variables
+SERVER_PORT: 443
+SSL_FILE_PATH_PRIMARY: "/etc/pki/tls/certs/valorpaytech.com.crt"
+SSL_KEY_PATH_PRIMARY: "/etc/pki/tls/certs/valorpaytech.com.pem"
+PROXY_TIMEOUT_SECONDS: 660
+SEND_TIMEOUT_SECONDS: 660
+
+PORTAL_PROJECT_DIR: /opt/portal/
+PORTAL_SERVER_NAME: portal-dev.valorpaytech.com
+PORTAL_PORT: 5000
+PORTAL_ENV_NAME: .env.dev
+PORTAL_BRANCH_NAME: uat_master
+
+FLAMINGO_PROJECT_DIR: /opt/flamingo/
+FLAMINGO_SERVER_NAME: flamingo-dev.valorpaytech.com
+FLAMINGO_PORT: 6000
+FLAMINGO_ENV_NAME: .env.dev
+FLAMINGO_BRANCH_NAME: develop

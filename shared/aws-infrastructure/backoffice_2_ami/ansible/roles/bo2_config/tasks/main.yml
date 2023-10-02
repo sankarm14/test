@@ -1,0 +1,82 @@
+---
+- name: Put SELinux in permissive mode, logging actions that would be blocked.
+  selinux:
+    policy: targeted
+    state: permissive
+  become_user: root
+#-------------------------------------------
+# stunnel config files 
+#-------------------------------------------
+- name: Creates directory for stunnel
+  file:
+    path: /var/run/stunnel
+    state: directory
+    mode: '0700'
+  become_user: root
+
+- name: Create signedcert file for stunnel to etc
+  ansible.builtin.copy:
+    src: ../files/certs/signedCert.pem
+    dest: /etc/stunnel/
+  become_user: root 
+
+- name: Create privatekey files for stunnel to etc
+  ansible.builtin.copy:
+     src: ../files/certs/PrivateKey.pem
+     dest: /etc/stunnel/
+  become_user: root
+
+- name: Create Config files for stunnel to bo2 path
+  ansible.builtin.copy:
+     src: ../files/certs/stunnel.conf
+     dest: /home/ec2-user/
+  become_user: root
+
+#- name: Create Config files for stunnel to etc
+#  ansible.builtin.copy:
+#     src: ../files/certs/stunnel.conf
+#     dest: /etc/stunnel/
+#  become_user: root
+
+#-------------------------------------------------
+# Haproxy config files
+#-------------------------------------------------
+#- name: Create Config files for haproxy
+#  ansible.builtin.copy:
+#     src: ../files/certs/config.ini
+#     dest: /home/uat-switch/switch/scripts/redis-stunnel/
+#  become_user: root
+#
+#- name: Create Config files for haproxy
+#  ansible.builtin.copy:
+#     src: ../files/certs/haproxy.cfg.uat
+#     dest: /home/uat-switch/switch/scripts/redis-stunnel/
+#  become_user: root
+#
+#- name: Create conf files for haproxy 
+#  ansible.builtin.copy:
+#     src: ../files/certs/haproxy.cfg
+#     dest: /etc/haproxy/
+#  become_user: root
+#--------------------------------------------------------
+#- name: Create conf files for logs rotate conf
+#  ansible.builtin.copy:
+#     src: ../files/certs/valor-switch-log-rotate
+#     dest: /etc/cron.d/
+#  become_user: root
+#
+#- name: Create conf files for reload conf
+#  ansible.builtin.copy:
+#     src: ../files/certs/valor-switch-reload
+#     dest: /etc/cron.d/
+#  become_user: root
+
+#- name: start HAProxy service
+#  systemd:
+#    name: haproxy.service
+#    state: started
+#
+#- name: start stunnel service
+#  systemd:
+#    name: stunnel
+#    state: started

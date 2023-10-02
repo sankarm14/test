@@ -1,0 +1,40 @@
+pipeline {
+  agent any
+
+  environment {
+        AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY_ID_SHARED')
+        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY_SHARED')
+        AWS_DEFAULT_REGION    = "us-east-1"
+        DIR                   = "shared/aws-infrastructure/efs_base_ami/packer"
+    }
+
+  stages {
+    stage('Packer - Build') {
+      steps {
+        script {
+            dir ("${env.WORKSPACE}/${env.DIR}") {
+                packerBuild()
+            }
+        }
+      }
+    }
+  }
+  post {
+        success {
+          script {
+            build wait: false, propagate: false,job: 'Dev/AWS-efs-server-dev'
+          }
+        }
+        always {
+            echo 'Deleting Directory!'
+            deleteDir()
+        }
+    }
+}
+def packerBuild() {
+    sh("""
+        #!/bin/bash
+        /usr/local/bin/packer init .
+        /usr/local/bin/packer build .
+    """)
+}

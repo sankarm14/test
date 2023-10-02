@@ -1,0 +1,14 @@
+---
+- name: "Install required dependencies for EMQ X"
+  yum:
+    name: 
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
+    state: present
+    lock_timeout: 180
+
+- name: Download and install emqx-5.0.12-el8-amd64.rpm rpm package
+  yum:
+    disable_gpg_check: yes
+    name: "https://www.emqx.com/en/downloads/broker/5.0.12/emqx-5.0.12-el8-amd64.rpm"

@@ -1,0 +1,94 @@
+pipeline {
+    agent any
+
+    environment {
+        AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY_ID_STAGING')
+        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY_STAGING')
+        AWS_DEFAULT_REGION    = "us-east-1"
+        BACKEND_BUCKET        = "valor-staging-tf-state"
+        BACKEND_KEY           = "infrastructure/efs-staging.tfstate"
+        VAR_FILE              = "efs.tfvars"
+        DIR                   = "staging/aws-infrastructure/efs/terraform"
+    }
+
+    parameters {
+        choice(
+            name: 'Action',
+            choices: ['Build', 'Destroy'],
+            description: 'The action to take'
+        )
+    }
+
+    stages {
+        stage('Init') {
+            steps {
+                script {
+                    dir ("${env.WORKSPACE}/${env.DIR}") {
+                        terraformInit()
+                    }
+                }
+            }
+        }
+        stage('Plan') {
+            steps {
+                script {
+                    dir ("${env.WORKSPACE}/${env.DIR}") {
+                        terraformPlan()
+                    }
+                }
+            }
+        }
+        stage('Approval') {
+            steps {
+                input(message: 'Apply Terraform ?')
+            }
+        }
+        stage('Apply') {
+            steps {
+                script {
+                    dir ("${env.WORKSPACE}/${env.DIR}") {
+                        terraformApply()
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            echo 'Deleting Directory!'
+            deleteDir()
+        }
+    }
+}
+
+def terraformInit() {
+    sh("""
+        terraform init -upgrade -backend-config="key=${env.BACKEND_KEY}"
+    """)
+}
+
+def terraformPlan() {
+    // Setting Terraform Destroy flag
+    if(params.Action == 'Destroy') {
+        env.DESTROY = '-destroy'
+    } else {
+        env.DESTROY = ""
+    }
+
+    sh("""
+        terraform plan ${env.DESTROY} -var-file=${env.VAR_FILE} -no-color
+    """)
+}
+
+def terraformApply() {
+    if(params.Action == 'Destroy') {
+        env.DESTROY = '-destroy'
+        sh("""
+        terraform apply ${env.DESTROY} -var-file=${env.VAR_FILE} -no-color --auto-approve
+        """)
+    } else {
+        sh("""
+        terraform apply -var-file=${env.VAR_FILE} -no-color --auto-approve
+        """)
+    }
+}

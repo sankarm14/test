@@ -1,0 +1,182 @@
+---
+- name: Creates directory for the portal app
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ PORTAL_PROJECT_DIR }}"
+    - "{{ FLAMINGO_PROJECT_DIR }}"
+
+- name: Return motd to registered var
+  command: ssh-keyscan -t rsa gitlab.shared.valoraws.com >> /root/.ssh/known_hosts
+
+- name: Clone portal code from {{ PORTAL_BRANCH_NAME }}
+  ansible.builtin.git:
+    repo: git@gitlab.shared.valoraws.com:valor/web/portal.git
+    dest: "{{ PORTAL_PROJECT_DIR }}"
+    version: "{{ PORTAL_BRANCH_NAME }}"
+    accept_hostkey: true
+  become_user: root
+  async: 240
+  poll: 0
+  register: portal_clone_code
+
+- name: Clone flamingo code from {{ FLAMINGO_BRANCH_NAME }}
+  ansible.builtin.git:
+    repo: git@gitlab.shared.valoraws.com:valor/web/flamingo.git
+    dest: "{{ FLAMINGO_PROJECT_DIR }}"
+    version: "{{ FLAMINGO_BRANCH_NAME }}"
+    accept_hostkey: true
+  become_user: root
+  async: 240
+  poll: 0
+  register: flamingo_clone_code
+
+- name: Check status of clone code
+  async_status:
+    jid: "{{ item.ansible_job_id }}"
+  register: clone_code_status_result
+  until: clone_code_status_result.finished
+  retries: 24
+  delay: 10
+  loop:
+    - "{{ portal_clone_code }}"
+    - "{{ flamingo_clone_code }}"
+
+- name: Print status of clone code
+  debug:
+    msg: "TASK STATUS - #{{ index }} : {% if item.finished == 1 %}FINISHED{% else %}FAILED{% endif %}"
+  loop: "{{ clone_code_status_result.results }}"
+  loop_control:
+    index_var: index
+    label: "{{ item }}"
+
+- name: install portal-server dependencies
+  ansible.builtin.command: npm i -f
+  args:
+    chdir: "{{ PORTAL_PROJECT_DIR }}"
+  become_user: root
+  async: 900
+  poll: 0
+  register: portal_server_npm
+
+- name: install portal-client dependencies
+  ansible.builtin.command: npm i -f
+  args:
+    chdir: "{{ PORTAL_PROJECT_DIR }}client/"
+  become_user: root
+  async: 900
+  poll: 0
+  register: portal_client_npm
+
+- name: install flamingo-server dependencies
+  ansible.builtin.command: npm i -f
+  args:
+    chdir: "{{ FLAMINGO_PROJECT_DIR }}"
+  become_user: root
+  async: 900
+  poll: 0
+  register: flamingo_server_npm
+
+- name: install flamingo-client dependencies
+  ansible.builtin.command: npm i -f
+  args:
+    chdir: "{{ FLAMINGO_PROJECT_DIR }}client/"
+  become_user: root
+  async: 900
+  poll: 0
+  register: flamingo_client_npm
+
+- name: Check status of npm installation
+  async_status:
+    jid: "{{ item.ansible_job_id }}"
+  register: npm_installation_status_result
+  until: npm_installation_status_result.finished
+  retries: 30
+  delay: 30
+  loop:
+    - "{{ portal_server_npm }}"
+    - "{{ portal_client_npm }}"
+    - "{{ flamingo_server_npm }}"
+    - "{{ flamingo_client_npm }}"
+
+- name: Print status of npm installation
+  debug:
+    msg: "TASK STATUS - #{{ index }} : {% if item.finished == 1 %}FINISHED{% else %}FAILED{% endif %}"
+  loop: "{{ npm_installation_status_result.results }}"
+  loop_control:
+    index_var: index
+    label: "{{ item }}"
+
+- name: build portal-client
+  ansible.builtin.command: npm run build:dev
+  args:
+    chdir: "{{ PORTAL_PROJECT_DIR }}client/"
+  become_user: root
+  # async: 1800
+  # poll: 0
+  # register: portal_client_build
+
+- name: build flamingo-client
+  ansible.builtin.command: npm run build:dev
+  args:
+    chdir: "{{ FLAMINGO_PROJECT_DIR }}client/"
+  become_user: root
+  # async: 1800
+  # poll: 0
+  # register: flamingo_client_build
+
+# - name: Check status of build
+#   async_status:
+#     jid: "{{ item.ansible_job_id }}"
+#   register: build_status_result
+#   until: build_status_result.finished
+#   retries: 60
+#   delay: 30
+#   loop:
+#     - "{{ flamingo_client_build }}"
+#     - "{{ portal_client_build }}"
+
+# - name: Print status of build
+#   debug:
+#     msg: "TASK STATUS - #{{ index }} : {% if item.finished == 1 %}FINISHED{% else %}FAILED{% endif %}"
+#   loop: "{{ build_status_result.results }}"
+#   loop_control:
+#     index_var: index
+#     label: "{{ item }}"
+
+- name: copy the portal-server env from {{ PORTAL_ENV_NAME }} to .env
+  ansible.builtin.copy:
+    src: "{{ PORTAL_PROJECT_DIR }}/{{ PORTAL_ENV_NAME }}"
+    dest: "{{ PORTAL_PROJECT_DIR }}/.env"
+    remote_src: yes
+  become_user: root
+
+- name: copy the flamingo-server env from {{ FLAMINGO_ENV_NAME }} to .env
+  ansible.builtin.copy:
+    src: "{{ FLAMINGO_PROJECT_DIR }}{{ FLAMINGO_ENV_NAME }}"
+    dest: "{{ FLAMINGO_PROJECT_DIR }}.env"
+    remote_src: yes
+  become_user: root
+
+- name: start pm2 for portal-server
+  ansible.builtin.shell: pm2 start ecosystem.config.js --env dev
+  args:
+    chdir: "{{ PORTAL_PROJECT_DIR }}"
+  become: true
+  become_user: ec2-user
+  ignore_errors: true
+
+- name: start pm2 flamingo-server script
+  ansible.builtin.shell: pm2 start ecosystem.config.js --env dev
+  args:
+    chdir: "{{ FLAMINGO_PROJECT_DIR }}"
+  become: true
+  become_user: ec2-user
+  ignore_errors: true
+
+- name: save PM2 current state
+  ansible.builtin.shell: pm2 save
+  become: true
+  become_user: ec2-user
+  ignore_errors: true

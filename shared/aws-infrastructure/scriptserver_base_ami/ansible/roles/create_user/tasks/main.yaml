@@ -1,0 +1,55 @@
+---
+- name: Creating Script user
+  ansible.builtin.user:
+    name: script
+    comment: script user
+    home: "{{SCRIPT_PROJECT_DIR}}"
+    shell: /bin/bash
+
+- name: Creates directory for ssh
+  file:
+    path: "{{SCRIPT_PROJECT_DIR}}.ssh/"
+    state: directory
+    mode: '0700'
+  become_user: script
+  
+- name: Copy ssh key
+  template: 
+    src: id_rsa_valor
+    dest: "{{SCRIPT_PROJECT_DIR}}.ssh/id_rsa"
+
+- name: Change ownership of ssh key
+  file: 
+    path: "{{SCRIPT_PROJECT_DIR}}.ssh/id_rsa"
+    owner: script
+    group: script
+    mode: '0600'
+
+
+- name: Creating Switch user
+  ansible.builtin.user:
+    name: switch
+    comment: switch user
+    home: "{{SWITCH_PROJECT_DIR}}"
+    shell: /bin/bash
+
+- name: Creates directory for ssh
+  file:
+    path: "{{SWITCH_PROJECT_DIR}}.ssh/"
+    state: directory
+    mode: '0700'
+  become_user: switch
+  
+- name: Copy ssh key
+  template: 
+    src: id_rsa_valor
+    dest: "{{SWITCH_PROJECT_DIR}}.ssh/id_rsa"
+
+- name: Change ownership of ssh key
+  file: 
+    path: "{{SWITCH_PROJECT_DIR}}.ssh/id_rsa"
+    owner: switch
+    group: switch
+    mode: '0600'
+
+

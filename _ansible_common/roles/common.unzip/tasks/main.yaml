@@ -1,0 +1,9 @@
+---
+- name: "Install Unzip package"
+  yum:
+    name:
+      - "unzip"
+    state: present
+    lock_timeout: 180
+  # vars:
+  #   ansible_python_interpreter: "/usr/bin/python"

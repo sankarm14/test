@@ -1,0 +1,74 @@
+---
+- name: Creates directory for the switch app 
+  file:
+    path: "{{ SWITCH_PROJECT_DIR }}"
+    state: directory
+  #loop:
+  #  - "{{ SWITCH_PROJECT_DIR }}"
+
+- name: Return motd to registered var
+  command: ssh-keyscan -t rsa gitlab.shared.valoraws.com >> /root/.ssh/known_hosts
+
+- name: Clone the code from the Repo (switch)
+  ansible.builtin.git:
+    repo: git@gitlab.shared.valoraws.com:valor/switch.git
+    dest: "{{ SWITCH_PROJECT_DIR }}"
+    version: master
+    #version: "{{ SWITCH_BRANCH_NAME }}"
+    accept_hostkey: true
+  become_user: root
+
+- name: Remove not needed files
+  ansible.builtin.command: rm -rf CMakeFiles/ CMakeCache.txt cmake_install.cmake install_manifest.txt
+  args:
+    chdir: "{{ SWITCH_PROJECT_DIR }}lib/src/DL_C_ISO8583_v0_0_4/build/"
+  become_user: root
+
+- name: compile the code (CMAKE3)
+  ansible.builtin.command: /bin/cmake3 ..
+  args:
+    chdir: "{{ SWITCH_PROJECT_DIR }}lib/src/DL_C_ISO8583_v0_0_4/build/"
+  become_user: root
+
+- name: compile the code (make)
+  ansible.builtin.command: /bin/make
+  args:
+    chdir: "{{ SWITCH_PROJECT_DIR }}lib/src/DL_C_ISO8583_v0_0_4/build/"
+  become_user: root
+
+- name: make install
+  ansible.builtin.command: /bin/make install
+  args:
+    chdir: "{{ SWITCH_PROJECT_DIR }}lib/src/DL_C_ISO8583_v0_0_4/build/"
+  become_user: root
+
+- name: Remove not needed files
+  ansible.builtin.command: rm -rf CMakeFiles/ CMakeCache.txt cmake_install.cmake install_manifest.txt
+  args:
+    chdir: "{{ SWITCH_PROJECT_DIR }}build/"
+  become_user: root
+
+- name: compile the code (cmake3)
+  ansible.builtin.command: /bin/cmake3 ..
+  args:
+    chdir: "{{ SWITCH_PROJECT_DIR }}build/"
+  become_user: root
+
+- name: compile the code (make)
+  ansible.builtin.command: /bin/make -j4
+  args:
+    chdir: "{{ SWITCH_PROJECT_DIR }}build/"
+  become_user: root
+
+#- name: Creates directory for the switch app 
+#  file:
+#    path: "/home/ensure-bill"
+#    state: directory
+
+# - name: Clone the code from the Repo (switch_scripts)
+#   ansible.builtin.git:
+#     repo: git@gitlab.shared.valoraws.com:valor/switch_scripts.git
+#     dest: /opt/switch_scripts
+#     version: master
+#     accept_hostkey: true
+#   become_user: root

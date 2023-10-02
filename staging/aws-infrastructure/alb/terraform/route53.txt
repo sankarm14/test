@@ -1,0 +1,84 @@
+module "route53" {
+  source = "../../../../_modules/route53"
+  /**
+  * If name not given skip_zone_creation will be true
+  */
+  zone_id         = data.terraform_remote_state.dev.outputs.zone_id
+  allow_overwrite = var.allow_overwrite
+  records = [
+    {
+      name = "portal"
+      type = var.default_type
+      alias = {
+        name                   = module.alb.alb_dns_name[0]
+        zone_id                = module.alb.alb_zone_id[1]
+        evaluate_target_health = true
+      }
+    },
+  ]
+}
+
+module "route53_2" {
+  source = "../../../../_modules/route53"
+  /**
+  * If name not given skip_zone_creation will be true
+  */
+  zone_id         = data.terraform_remote_state.dev.outputs.zone_id
+  allow_overwrite = var.allow_overwrite
+  records = [
+    {
+      name = "2fa"
+      type = var.default_type
+      alias = {
+        name                   = module.alb.alb_dns_name[1]
+        zone_id                = module.alb.alb_zone_id[1]
+        evaluate_target_health = true
+      }
+    },
+    {
+      name = "tms"
+      type = var.default_type
+      alias = {
+        name                   = module.alb.alb_dns_name[1]
+        zone_id                = module.alb.alb_zone_id[1]
+        evaluate_target_health = true
+      }
+    },
+    {
+      name = "vt"
+      type = var.default_type
+      alias = {
+        name                   = module.alb.alb_dns_name[1]
+        zone_id                = module.alb.alb_zone_id[1]
+        evaluate_target_health = true
+      }
+    },
+    {
+      name = "sms"
+      type = var.default_type
+      alias = {
+        name                   = module.alb.alb_dns_name[1]
+        zone_id                = module.alb.alb_zone_id[1]
+        evaluate_target_health = true
+      }
+    },
+    {
+      name = "rcpt"
+      type = var.default_type
+      alias = {
+        name                   = module.alb.alb_dns_name[1]
+        zone_id                = module.alb.alb_zone_id[1]
+        evaluate_target_health = true
+      }
+    },
+    {
+      name = "securelink"
+      type = var.default_type
+      alias = {
+        name                   = module.alb.alb_dns_name[1]
+        zone_id                = module.alb.alb_zone_id[1]
+        evaluate_target_health = true
+      }
+    },
+  ]
+}

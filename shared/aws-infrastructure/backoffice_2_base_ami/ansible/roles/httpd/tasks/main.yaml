@@ -1,0 +1,107 @@
+---
+- name: Install the latest version of Apache
+  yum:
+    name: httpd
+    state: latest
+
+# lineinfile-Manage lines in text files
+# Using apache ssl default port as 4430 instead of default port 443
+- name: Change default port to 4430
+  lineinfile:
+    path: /etc/httpd/conf.d/ssl.conf
+    regexp: "^Listen 443$"
+    line: "Listen 4430"
+
+- name: Put SELinux in permissive mode, logging actions that would be blocked.
+  selinux:
+    policy: targeted
+    state: permissive
+
+- name: Start service httpd, if not started
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+
+# Create vHost conf files
+- name: Create Config files fallback host
+  template:
+    src: 00-default.conf.j2
+    dest: /etc/httpd/conf.d/00-default.conf
+  become_user: root
+
+- name: Create Config files for 2fa
+  template:
+    src: 2fa.conf.j2
+    dest: /etc/httpd/conf.d/2fa.conf
+  become_user: root
+
+- name: Create Config files redirect http to https
+  template:
+    src: http-redirect.conf.j2
+    dest: /etc/httpd/conf.d/http-redirect.conf
+  become_user: root
+
+- name: Create Config files for rcpt
+  template:
+    src: rcpt.conf.j2
+    dest: /etc/httpd/conf.d/rcpt.conf
+  become_user: root
+
+- name: Create Config files for securelink
+  template:
+    src: securelink.conf.j2
+    dest: /etc/httpd/conf.d/securelink.conf
+  become_user: root
+
+- name: Create Config files for sms
+  template:
+    src: sms.conf.j2
+    dest: /etc/httpd/conf.d/sms.conf
+  become_user: root
+
+- name: Create Config files for tms
+  template:
+    src: tms.conf.j2
+    dest: /etc/httpd/conf.d/tms.conf
+  become_user: root
+
+- name: Create Config files for boarding
+  template:
+    src: boarding.conf.j2
+    dest: /etc/httpd/conf.d/boarding.conf
+  become_user: root
+
+- name: Create Config files for vt
+  template:
+    src: vt.conf.j2
+    dest: /etc/httpd/conf.d/vt.conf
+  become_user: root
+
+- name: Create Config files for qb
+  template:
+    src: qb.conf.j2
+    dest: /etc/httpd/conf.d/qb.conf
+  become_user: root
+
+- name: Creates directory for the (/etc/pki/tls/certs/)
+  file:
+    path: /etc/pki/tls/certs/
+    state: directory
+
+# Copy SSL certificate files
+- name: Copy certificates files
+  ansible.builtin.copy:
+    src: ../files/certs/
+    dest: /etc/pki/tls/certs/
+    owner: root
+    group: root
+    mode: "0644"
+  become_user: root
+
+- name: restart service httpd
+  service:
+    name: httpd
+    state: restarted
+    enabled: true
+  ignore_errors: true

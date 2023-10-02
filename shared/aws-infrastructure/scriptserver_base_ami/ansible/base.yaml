@@ -1,0 +1,29 @@
+---
+- hosts:
+    - dev
+  become: yes
+  become_user: root
+  gather_facts: yes
+  roles:
+    - common.python36
+    - common.pip3
+    - common.aws-dependencies
+    - common.ssm
+    - common.unzip
+    - common.timezone
+    - common.git
+    - common.wget
+    - common.curl
+    - common.openssl
+    - common.mod_ssl
+    - common.ssh_key
+    - httpd
+    - php56
+    - java11
+    - filebeat
+    - emqx
+    - script_packages
+    - txn_packages
+    - create_user
+    - efs_utils
+   

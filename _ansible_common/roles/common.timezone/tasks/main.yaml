@@ -1,0 +1,6 @@
+---
+- name: "Set timezone to UTC"
+  timezone:
+    name: "UTC"
+  become: yes
+  become_user: root

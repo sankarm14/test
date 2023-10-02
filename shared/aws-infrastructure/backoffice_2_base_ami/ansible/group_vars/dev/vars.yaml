@@ -1,0 +1,61 @@
+---
+# Common variables
+SSL_FILE_PATH_PRIMARY: "/etc/pki/tls/certs/valorpaytech.com.crt"
+SSL_KEY_PATH_PRIMARY: "/etc/pki/tls/certs/valorpaytech.com.pem"
+SSL_CHAIN_PATH_PRIMARY: "/etc/pki/tls/certs/valorpaytech_intermediate.com.crt"
+
+TFA_PROJECT_DIR: "/var/www/html/2fa/"
+RCPT_PROJECT_DIR: "/var/www/html/rcpt/"
+SMS_PROJECT_DIR: "/var/www/html/sms/"
+TMS_PROJECT_DIR: "/var/www/html/tms/"
+VT_PROJECT_DIR: "/var/www/html/vt/"
+
+# Sub-domain based variables
+DOCUMENT_SOURCE_2FA: "/var/www/html/2fa/param/"
+SERVER_NAME_2FA: "2fa-dev.valorpaytech.com"
+SERVER_ALIAS_2FA: "2fa"
+
+DOCUMENT_SOURCE_RCPT: "/var/www/html/rcpt/public/"
+SERVER_NAME_RCPT: "rcpt-dev.valorpaytech.com"
+LOG_SOURCE_RCPT: "/var/log/httpd/rcpt.log"
+PUBLIC_SOURCE_RCPT: "/var/www/html/rcpt/public"
+UPLOAD_SOURCE_RCPT: "/var/www/html/rcpt/uploads"
+
+DOCUMENT_SOURCE_SECURELINK: "/var/www/html/vt/deeplink/"
+SERVER_NAME_SECURELINK: "securelink-dev.valorpaytech.com"
+SERVER_ALIAS_SECURELINK: "securelink"
+LOG_SOURCE_SECURELINK: "/var/log/httpd/secure-link.log"
+ERROR_LOG_SOURCE_SECURELINK: "/var/log/httpd/secure-link-error.log"
+ROOT_SOURCE_SECURELINK: "/var/www/html/vt/"
+
+DOCUMENT_SOURCE_SMS: "/var/www/html/sms/src/"
+SERVER_NAME_SMS: "sms-dev.valorpaytech.com"
+SERVER_ALIAS_SMS: "sms"
+LOG_SOURCE_SMS: "/var/log/httpd/sms.log"
+ERROR_LOG_SOURCE_SMS: "/var/log/httpd/sms-error.log"
+ROOT_SOURCE_SMS: "/var/www/html/sms/"
+
+DOCUMENT_SOURCE_TMS: "/var/www/html/tms"
+SERVER_NAME_TMS: "tms-dev.valorpaytech.com"
+SERVER_ALIAS_TMS: "tms"
+ALIAS_SOURCE_TMS: "/var/www/html/tms/"
+ROOT_SOURCE_TMS: "/var/www/html/tms/"
+
+DOCUMENT_SOURCE_QB: "/var/www/html/qb"
+SERVER_NAME_QB: "qb-dev.valorpaytech.com"
+SERVER_ALIAS_QB: "qb"
+ALIAS_SOURCE_QB: "/var/www/html/qb/"
+LOG_SOURCE_QB: "/var/log/httpd/qb.log"
+ROOT_SOURCE_QB: "/var/www/html/qb/"
+
+DOCUMENT_SOURCE_VT: "/var/www/html/vt/src"
+SERVER_NAME_VT: "vt-dev.valorpaytech.com"
+SERVER_ALIAS_VT: "virtual_terminal"
+LOG_SOURCE_VT: "/var/log/httpd/vt.log"
+ROOT_SOURCE_VT: "/var/www/html/vt/"
+
+# Boarding ISO Access
+DOCUMENT_SOURCE_BOARDING: "/var/www/html/tms/"
+SERVER_NAME_BOARDING: "boardinguat.valorpaytech.com"
+SERVER_ALIAS_BOARDING: "boarding"
+LOG_SOURCE_BOARDING: "/var/log/httpd/boarding.log"

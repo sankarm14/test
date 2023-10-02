@@ -1,0 +1,5 @@
+---
+# Common SERVER variables
+SWITCH_PROJECT_DIR: /home/switch/switch/
+SWITCH_ENV_NAME: .env.staging
+SWITCH_BRANCH_NAME: master

@@ -1,0 +1,23 @@
+---
+- name: install nodejs 16
+  ansible.builtin.command: yum module install nodejs:16 -y
+  become_user: root
+
+- name: install pm2
+  ansible.builtin.shell: "sudo npm install -g {{ item }}"
+  become: true
+  become_user: ec2-user
+  loop:
+    - pm2
+    - ts-node
+
+- name: set pm2 on startup
+  ansible.builtin.shell: |
+    pm2 startup
+    sudo env PATH=$PATH:/usr/bin /usr/local/lib/node_modules/pm2/bin/pm2 startup systemd -u ec2-user --hp /home/ec2-user
+  become_user: ec2-user
+
+- name: enable pm2 as startup service
+  ansible.builtin.shell: systemctl enable pm2-ec2-user
+  become_user: root
+  ignore_errors: true

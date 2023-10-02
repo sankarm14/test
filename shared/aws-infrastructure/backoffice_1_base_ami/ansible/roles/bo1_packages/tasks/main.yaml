@@ -1,0 +1,22 @@
+---
+#- name: Install epel repo
+#  ansible.builtin.command: yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+#  become_user: root
+
+- name: "Install backoffice_1 server packages"
+  yum:
+    name:
+      - stunnel
+      - haproxy
+    state: present
+    lock_timeout: 180
+
+- name: Copy haproxy
+  template: 
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+
+- name: start HAProxy service
+  systemd:
+    name: haproxy.service
+    state: started

@@ -1,0 +1,21 @@
+<VirtualHost *:4430>
+	DocumentRoot {{ DOCUMENT_SOURCE_SMS }}
+	ServerName {{ SERVER_NAME_SMS }}
+	ServerAlias {{ SERVER_ALIAS_SMS }}
+	#CustomLog {{ LOG_SOURCE_SMS }}
+	ErrorLog  {{ ERROR_LOG_SOURCE_SMS }}
+
+	SSLEngine On
+	SSLCertificateFile {{ SSL_FILE_PATH_PRIMARY }}
+	SSLCertificateKeyFile {{ SSL_KEY_PATH_PRIMARY }}
+	SSLCertificateChainFile {{ SSL_CHAIN_PATH_PRIMARY }}
+
+	SSLProtocol -all -TLSv1 -TLSv1.1 +TLSv1.2
+	SSLCipherSuite ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS:!3DES
+	
+	<Directory  {{ ROOT_SOURCE_SMS }}>
+		order deny,allow
+		Deny from all
+		Allow from 127.0.0.1
+	</Directory>
+</VirtualHost>

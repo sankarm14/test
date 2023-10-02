@@ -1,0 +1,10 @@
+---
+- name: "Install Python 3.6 package"
+  yum:
+    name:
+      - "python36"
+      - "libselinux-python3"
+    state: present
+    lock_timeout: 180
+  # vars:
+  #   ansible_python_interpreter: "/usr/bin/python"

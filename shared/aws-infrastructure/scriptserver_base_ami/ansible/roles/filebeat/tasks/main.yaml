@@ -1,0 +1,5 @@
+---
+- name: Download and install filebeat rpm package
+  yum:
+    disable_gpg_check: yes
+    name: "https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-8.5.3-x86_64.rpm"

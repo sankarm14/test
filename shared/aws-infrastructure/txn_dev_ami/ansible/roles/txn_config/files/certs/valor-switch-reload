@@ -1,0 +1,11 @@
+ # Config reload
+*/30 * * * * root /home/switch/switch/scripts/quick-reload.sh -p 'valorSwitchListener' > /dev/null 2>&1 &
+*/30 * * * * root /home/switch/switch/scripts/quick-reload.sh -p 'valorSwitchDialListener' > /dev/null 2>&1 &
+*/30 * * * * root /home/switch/switch/scripts/quick-reload.sh -p 'valorHSMProcessor' > /dev/null 2>&1 &
+*/30 * * * * root /home/switch/switch/scripts/quick-reload.sh -p 'valorSierraProcessor' > /dev/null 2>&1 &
+*/30 * * * * root /home/switch/switch/scripts/quick-reload.sh -p 'valorFdProcessor' > /dev/null 2>&1 &
+*/30 * * * * root /home/switch/switch/scripts/quick-reload.sh -p 'valorDPProcessor' > /dev/null 2>&1 &
+*/30 * * * * root /home/switch/switch/scripts/quick-reload.sh -p 'valorOBCProcessor' > /dev/null 2>&1 &
+*/30 * * * * root /home/switch/switch/scripts/quick-reload.sh -p 'valorEPXProcessor' > /dev/null 2>&1 &
+*/30 * * * * root /home/switch/switch/scripts/quick-reload.sh -p 'valorValutecProcessor' > /dev/null 2>&1 &
+*/30 * * * * root /home/switch/switch/scripts/quick-reload.sh -p 'valorFactor4Processor' > /dev/null 2>&1 &

@@ -1,0 +1,5 @@
+---
+# Common SERVER variables
+SWITCH_PROJECT_DIR: /home/uat-switch/switch/
+SWITCH_ENV_NAME: .env.dev
+SWITCH_BRANCH_NAME: sub-master

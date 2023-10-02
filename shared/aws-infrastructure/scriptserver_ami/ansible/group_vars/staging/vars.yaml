@@ -1,0 +1,7 @@
+---
+# Common SERVER variables
+SCRIPT_PROJECT_DIR: /home/script/
+SCRIPT_ENV_NAME: .env.staging
+SCRIPT_BRANCH_NAME: main
+SWITCH_PROJECT_DIR: /home/switch/switch/
+

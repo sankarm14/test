@@ -1,0 +1,6 @@
+---
+- name: "Install Wget"
+  yum:
+    name: "wget"
+    state: present
+    lock_timeout: 180

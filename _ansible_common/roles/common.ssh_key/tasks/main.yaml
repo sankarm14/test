@@ -1,0 +1,12 @@
+---
+- name: Copy ssh key
+  template:
+    src: id_rsa_new
+    dest: /root/.ssh/id_rsa
+
+- name: Change ownership of ssh key
+  file:
+    path: /root/.ssh/id_rsa
+    owner: root
+    group: root
+    mode: "0600"

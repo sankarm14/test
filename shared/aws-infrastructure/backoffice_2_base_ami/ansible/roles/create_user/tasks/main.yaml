@@ -1,0 +1,28 @@
+---
+- name: Creating Bo2 user
+  ansible.builtin.user:
+    name: bo2
+    comment: bo2 user
+    home: /home/bo2
+    shell: /bin/bash
+
+- name: Creates directory for ssh
+  file:
+    path: /home/bo2/.ssh/
+    state: directory
+    mode: '0700'
+  become_user: bo2
+  
+- name: Copy ssh key
+  template: 
+    src: id_rsa_valor
+    dest: /home/bo2/.ssh/id_rsa
+
+- name: Change ownership of ssh key
+  file: 
+    path: /home/bo2/.ssh/id_rsa
+    owner: bo2
+    group: bo2
+    mode: '0600'
+
+

@@ -1,0 +1,28 @@
+---
+- name: Creating Switch user
+  ansible.builtin.user:
+    name: switch
+    comment: switch user
+    home: "/home/switch/"
+    shell: /bin/bash
+
+- name: Creates directory for ssh
+  file:
+    path: "/home/switch/.ssh/"
+    state: directory
+    mode: '0700'
+  become_user: switch
+  
+- name: Copy ssh key
+  template: 
+    src: id_rsa_valor
+    dest: "/home/switch/.ssh/id_rsa"
+
+- name: Change ownership of ssh key
+  file: 
+    path: "/home/switch/.ssh/id_rsa"
+    owner: switch
+    group: switch
+    mode: '0600'
+
+

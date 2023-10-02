@@ -1,0 +1,6 @@
+---
+- name: "Install Openssl"
+  yum:
+    name: "openssl"
+    state: present
+    lock_timeout: 180

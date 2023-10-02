@@ -1,0 +1,18 @@
+
+---
+- name: download efs and install
+  ansible.builtin.command: "wget https://rpmfind.net/linux/opensuse/ports/i586/tumbleweed/repo/oss/noarch/aws-efs-utils-1.35.0-1.2.noarch.rpm -O /tmp/aws-efs-utils.rpm"
+
+- name: Install efs-utils RPM file
+  ansible.builtin.yum:
+    name: /tmp/aws-efs-utils.rpm
+    state: present
+    disable_gpg_check: yes
+  become: yes
+ 
+- name: Install nfs-utils RPM file
+  ansible.builtin.yum:
+    name: nfs-utils
+    state: present
+    disable_gpg_check: yes
+  become: yes

@@ -1,0 +1,40 @@
+---
+#- name: Install epel repo
+#  ansible.builtin.command: yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+#  become_user: root
+
+- name: "Install backoffice_2 server packages"
+  yum:
+    name:
+      - stunnel
+      - haproxy
+      - redis
+    state: present
+    lock_timeout: 180
+
+- name: Copy haproxy
+  template: 
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+
+#- name: Start the haproxy service
+#  service:
+#    name: haproxy
+#    state: started
+#    enabled: yes
+
+- name: Download wkhtmltox-0.12.6-1 RPM package
+  ansible.builtin.command: yum -y install https://rhel.pkgs.org/7/okey-x86_64/wkhtmltopdf-0.12.2.1-1.el7.centos.x86_64.rpm
+  become: true
+  become_user: root
+  ignore_errors: yes
+
+#- name: Download wkhtmltox-0.12.6-1 rpm package
+#  ansible.builtin.command: wget "http://rpmfind.net/linux/fedora/linux/development/rawhide/Everything/aarch64/os/Packages/w/wkhtmltopdf-0.12.6-1.fc38.5.aarch64.rpm  -O /tmp/wkhtmltopdf-0.12.6-1.fc38.5.aarch64.rpm"
+#
+#- name: Install wkhtmltox package
+#  yum:
+#    name: /tmp/wkhtmltopdf-0.12.6-1.fc38.5.aarch64.rpm
+#    state: present
+#    disable_gpg_check: yes
+#  become: true

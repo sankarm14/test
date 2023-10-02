@@ -1,0 +1,2 @@
+# Log rotate
+5,35 * * * * root /home/switch/switch/scripts/quick-logrotate.sh > /dev/null 2>&1 &

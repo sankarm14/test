@@ -1,0 +1,33 @@
+---
+- name: Download and install epel-release-latest-7 rpm package
+  yum:
+    disable_gpg_check: yes
+    name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+
+- name: Download and install remi-release-7 rpm package
+  yum:
+    disable_gpg_check: yes
+    name: "http://rpms.remirepo.net/enterprise/remi-release-7.rpm"
+
+- name: "Install yum-utils"
+  yum:
+    name: "yum-utils"
+    state: present
+    lock_timeout: 180
+
+- name: Activate Remi repository as the default repository for php5.6
+  ansible.builtin.shell: yum-config-manager --enable remi-php56
+
+
+- name: "Install PHP5.6 and dependencies"
+  yum:
+    name:
+      - php
+      - php-common
+      - php-cli
+      - php-gd
+      - php-curl
+      - php-ldap
+      - php-zip
+    state: present
+    lock_timeout: 180

@@ -1,0 +1,108 @@
+---
+- name: Creating Bo1-logs user
+  ansible.builtin.user:
+    name: bo1-logs
+    comment: bo1-logs user
+    home: /home/bo1-logs
+    mode: '0755'
+    shell: /bin/rbash
+
+- name: Creates directory for ssh
+  file:
+    path: /home/bo1-logs/.ssh/
+    state: directory
+    mode: '0700'
+  become_user: bo1-logs
+  
+- name: Copy ssh key
+  template: 
+    src: id_rsa_valor_bo1
+    dest: /home/bo1-logs/.ssh/authorized_keys
+
+- name: Change ownership of ssh key
+  file: 
+    path: /home/bo1-logs/.ssh/authorized_keys
+    owner: bo1-logs
+    group: bo1-logs
+    mode: '0400'
+
+- name: Creating Bo2-logs user
+  ansible.builtin.user:
+    name: bo2-logs
+    comment: bo2-logs user
+    home: /home/bo2-logs
+    mode: '0755'
+    shell: /bin/rbash
+
+- name: Creates directory for ssh
+  file:
+    path: /home/bo2-logs/.ssh/
+    state: directory
+    mode: '0700'
+  become_user: bo2-logs
+  
+- name: Copy ssh key
+  template: 
+    src: id_rsa_valor_bo2
+    dest: /home/bo2-logs/.ssh/authorized_keys
+
+- name: Change ownership of ssh key
+  file: 
+    path: /home/bo2-logs/.ssh/authorized_keys
+    owner: bo2-logs
+    group: bo2-logs
+    mode: '0600'
+
+- name: Creating script-logs user
+  ansible.builtin.user:
+    name: script-logs
+    comment: script-logs user
+    home: /home/script-logs
+    mode: '0755'
+    shell: /bin/rbash
+
+- name: Creates directory for ssh
+  file:
+    path: /home/script-logs/.ssh/
+    state: directory
+    mode: '0700'
+  become_user: script-logs
+  
+- name: Copy ssh key
+  template: 
+    src: id_rsa_valor_script
+    dest: /home/script-logs/.ssh/authorized_keys
+
+- name: Change ownership of ssh key
+  file: 
+    path: /home/script-logs/.ssh/authorized_keys
+    owner: script-logs
+    group: script-logs
+    mode: '0600'
+  
+- name: Creating txn-logs user
+  ansible.builtin.user:
+    name: txn-logs
+    comment: txn-logs user
+    home: /home/txn-logs
+    mode: '0755'
+    shell: /bin/rbash
+
+- name: Creates directory for ssh
+  file:
+    path: /home/txn-logs/.ssh/
+    state: directory
+    mode: '0700'
+  become_user: txn-logs
+   
+- name: Copy ssh key
+  template: 
+    src: id_rsa_valor_txn
+    dest: /home/txn-logs/.ssh/authorized_keys
+
+- name: Change ownership of ssh key
+  file: 
+    path: /home/txn-logs/.ssh/authorized_keys
+    owner: txn-logs
+    group: txn-logs
+    mode: '0600'

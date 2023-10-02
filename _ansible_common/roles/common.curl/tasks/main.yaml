@@ -1,0 +1,6 @@
+---
+- name: "Install Curl"
+  yum:
+    name: "curl"
+    state: present
+    lock_timeout: 180

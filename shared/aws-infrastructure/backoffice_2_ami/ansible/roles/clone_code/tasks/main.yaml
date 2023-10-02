@@ -1,0 +1,198 @@
+---
+- name: Create project directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ TFA_PROJECT_DIR }}"
+    - "{{ RCPT_PROJECT_DIR }}"
+    - "{{ SMS_PROJECT_DIR }}"
+    - "{{ TMS_PROJECT_DIR }}"
+    - "{{ VT_PROJECT_DIR }}"
+    - "{{ QB_PROJECT_DIR }}"
+    - "{{ EBL_PROJECT_DIR }}"
+
+- name: Return motd to registered var
+  command: ssh-keyscan -t rsa gitlab.shared.valoraws.com >> /root/.ssh/known_hosts
+
+- name: clone 2FA code
+  ansible.builtin.git:
+    repo: git@gitlab.shared.valoraws.com:valor/web/2fa.git
+    dest: "{{ TFA_PROJECT_DIR }}"
+    version: "{{ TFA_VERSION }}"
+    accept_hostkey: true
+  become_user: root
+  async: 240
+  poll: 0
+  register: tfa_clone_code
+
+- name: clone RCPT code
+  ansible.builtin.git:
+    repo: git@gitlab.shared.valoraws.com:valor/web/rcpt.git
+    dest: "{{ RCPT_PROJECT_DIR }}"
+    version: "{{ RCPT_VERSION }}"
+    accept_hostkey: true
+  become_user: root
+  async: 240
+  poll: 0
+  register: rcpt_clone_code
+
+- name: clone SMS code
+  ansible.builtin.git:
+    repo: git@gitlab.shared.valoraws.com:valor/web/sms.git
+    dest: "{{ SMS_PROJECT_DIR }}"
+    version: "{{ SMS_VERSION }}"
+    accept_hostkey: true
+  become_user: root
+  async: 240
+  poll: 0
+  register: sms_clone_code
+
+- name: clone TMS code
+  ansible.builtin.git:
+    repo: git@gitlab.shared.valoraws.com:valor/web/tms.git
+    dest: "{{ TMS_PROJECT_DIR }}"
+    version: "{{ TMS_VERSION }}"
+    accept_hostkey: true
+  become_user: root
+  async: 240
+  poll: 0
+  register: tms_clone_code
+
+- name: clone VT code
+  ansible.builtin.git:
+    repo: git@gitlab.shared.valoraws.com:valor/web/vt.git
+    dest: "{{ VT_PROJECT_DIR }}"
+    version: "{{ VT_VERSION }}"
+    accept_hostkey: true
+  become_user: root
+  async: 240
+  poll: 0
+  register: vt_clone_code
+
+- name: clone QB code
+  ansible.builtin.git:
+    repo: git@gitlab.shared.valoraws.com:valor/web/infrastructure/qb.git
+    dest: "{{ QB_PROJECT_DIR }}"
+    version: "{{ QB_VERSION }}"
+    accept_hostkey: true
+  become_user: root
+  async: 240
+  poll: 0
+  register: qb_clone_code
+
+- name: clone EnsureBill code
+  ansible.builtin.git:
+    repo: git@gitlab.shared.valoraws.com:valor/web/infrastructure/ensure-bill.git
+    dest: "{{ EBL_PROJECT_DIR }}"
+    version: "{{ EBL_VERSION }}"
+    accept_hostkey: true
+  become_user: root
+  async: 240
+  poll: 0
+  register: ebl_clone_code
+
+- name: Check status of clone code
+  async_status:
+    jid: "{{ item.ansible_job_id }}"
+  register: clone_code_status_result
+  until: clone_code_status_result.finished
+  retries: 24
+  delay: 10
+  loop:
+    - "{{ tfa_clone_code }}"
+    - "{{ rcpt_clone_code }}"
+    - "{{ sms_clone_code }}"
+    - "{{ tms_clone_code }}"
+    - "{{ vt_clone_code }}"
+    - "{{ qb_clone_code }}"
+    - "{{ ebl_clone_code }}"
+
+- name: Change ownership of cloned code
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: apache
+    group: apache
+    recurse: yes
+  loop:
+    - "{{ TFA_PROJECT_DIR }}"
+    - "{{ RCPT_PROJECT_DIR }}"
+    - "{{ SMS_PROJECT_DIR }}"
+    - "{{ TMS_PROJECT_DIR }}"
+    - "{{ VT_PROJECT_DIR }}"
+    - "{{ QB_PROJECT_DIR }}"
+    - "{{ EBL_PROJECT_DIR }}"
+  become: true
+  become_user: root
+
+- name: copying required configuration files
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    remote_src: yes
+  become_user: root
+  loop:
+    - {
+        name: "2FA",
+        src: "{{ TFA_PROJECT_DIR }}{{ TFA_CONF_SOURCE }}",
+        dest: "{{ TFA_PROJECT_DIR }}{{ TFA_CONF_TARGET }}",
+      }
+    - {
+        name: "RCPT",
+        src: "{{ RCPT_PROJECT_DIR }}{{ RCPT_CONF_SOURCE }}",
+        dest: "{{ RCPT_PROJECT_DIR }}{{ RCPT_CONF_TARGET }}",
+      }
+    - {
+        name: "SMS",
+        src: "{{ SMS_PROJECT_DIR }}{{ SMS_CONF_SOURCE }}",
+        dest: "{{ SMS_PROJECT_DIR }}{{ SMS_CONF_TARGET }}",
+      }
+    - {
+        name: "TMS",
+        src: "{{ TMS_PROJECT_DIR }}{{ TMS_CONF_SOURCE }}",
+        dest: "{{ TMS_PROJECT_DIR }}{{ TMS_CONF_TARGET }}",
+      }
+    - {
+        name: "VT",
+        src: "{{ VT_PROJECT_DIR }}{{ VT_CONF_SOURCE }}",
+        dest: "{{ VT_PROJECT_DIR }}{{ VT_CONF_TARGET }}",
+      }
+    - {
+        name: "QB",
+        src: "{{ QB_PROJECT_DIR }}{{ QB_CONF_SOURCE }}",
+        dest: "{{ QB_PROJECT_DIR }}{{ QB_CONF_TARGET }}",
+      }
+    - {
+        name: "EBL",
+        src: "{{ EBL_PROJECT_DIR }}{{ EBL_CONF_SOURCE }}",
+        dest: "{{ EBL_PROJECT_DIR }}{{ EBL_CONF_TARGET }}",
+      }
+
+- name: creating 2fa logs folder
+  ansible.builtin.shell: |
+    mkdir logs
+    chown apache:apache -R logs/
+  become_user: root
+  args:
+    chdir: "{{ TFA_PROJECT_DIR }}"
+
+- name: creating tms logs folder
+  ansible.builtin.shell: |
+    mkdir logs
+    chown apache:apache -R logs/
+  become_user: root
+  args:
+    chdir: "{{ TMS_PROJECT_DIR }}"
+
+- name: "EnsureBill Cron"
+  ansible.builtin.cron:
+    user: "root"
+    name: "{{ item.name }}"
+    job: "{{ item.job }}"
+    minute: "{{item.minute}}"
+    hour: "{{item.hour}}"
+    state: present
+  loop:
+    - { job: "php {{ CRON_FILE_EBL }} request 3", name: "EnsureBill Cron 3 days", minute: "00", hour: "13", }
+    - { job: "php {{ CRON_FILE_EBL }} request 1", name: "EnsureBill Cron 1 days", minute: "00", hour: "14", }
+    - { job: "php {{ CRON_FILE_EBL }} response", name: "EnsureBill Response", minute: "00", hour: "*", }

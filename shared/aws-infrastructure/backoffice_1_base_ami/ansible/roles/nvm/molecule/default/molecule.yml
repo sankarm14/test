@@ -1,0 +1,41 @@
+---
+dependency:
+  name: galaxy
+
+driver:
+  name: docker
+
+lint: |
+  yamllint .
+  ansible-lint
+  flake8
+
+platforms:
+  - name: centos-8
+    image: centos:8
+  - name: centos-7
+    image: centos:7
+  - name: ubuntu-18.04
+    image: ubuntu:18.04
+  - name: ubuntu-16.04
+    image: ubuntu:16.04
+
+provisioner:
+  name: ansible
+  inventory:
+    host_vars:
+      centos-8:
+        nodejs_version12: 12.19.0
+        nodejs_version8: 8.16.0
+      centos-7:
+        nodejs_version12: 12.19.0
+        nodejs_version8: 8.16.0
+      ubuntu-18.04:
+        nodejs_version12: 12.19.0
+        nodejs_version8: 8.16.0
+      ubuntu-16.04:
+        nodejs_version12: 12.19.0
+        nodejs_version8: 8.16.0
+
+verifier:
+  name: testinfra

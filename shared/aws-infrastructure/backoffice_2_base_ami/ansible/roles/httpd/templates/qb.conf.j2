@@ -1,0 +1,19 @@
+<VirtualHost *:4430>
+	DocumentRoot {{ DOCUMENT_SOURCE_QB }}
+	ServerName {{ SERVER_NAME_QB }}
+	ServerAlias {{ SERVER_ALIAS_QB }}
+	CustomLog {{ LOG_SOURCE_QB }} common
+	
+	SSLEngine On
+	SSLCertificateFile {{ SSL_FILE_PATH_PRIMARY }}
+	SSLCertificateKeyFile {{ SSL_KEY_PATH_PRIMARY }}
+	SSLCertificateChainFile {{ SSL_CHAIN_PATH_PRIMARY }}
+
+	SSLProtocol -all -TLSv1 -TLSv1.1 +TLSv1.2
+	SSLCipherSuite ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS:!3DES
+	
+	<Directory  {{ ROOT_SOURCE_QB }}>
+		allow from all
+	</Directory>
+	
+</VirtualHost>

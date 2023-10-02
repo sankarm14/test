@@ -1,0 +1,38 @@
+---
+- name: Install epel repo
+  ansible.builtin.command: yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+  become_user: root
+
+- name: "Install txn packages in dev"
+  yum:
+    name:
+      #- libssl-dev
+      - vim
+      - mariadb
+      - telnet
+      - bind-utils
+      - openssl-devel
+      - mysql-devel
+      - curl-devel
+      - rapidjson
+      - libxml2-devel
+      - hiredis
+      # - libhiredis
+      # - libhiredis-devl
+      # - libhiredis-dev
+      - hiredis-devel
+      - snapd
+      - cmake
+      - git-all
+      - gcc-c++
+      - stunnel
+      - haproxy
+    state: present
+    lock_timeout: 180
+#- name: Install ebcdic
+#  ansible.builtin.command: pip3 install ebcdic
+#  become_user: root
+
+#- name: Install ISO8583
+#  ansible.builtin.command: pip3 install ISO8583
+#  become_user: root
