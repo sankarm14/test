@@ -25,3 +25,7 @@ variable "groups" {
     type = string
     default = ""
 }
+variable "my_variable" {
+  type    = string
+  default = ""
+}
