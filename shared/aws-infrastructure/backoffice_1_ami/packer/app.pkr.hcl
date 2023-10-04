@@ -14,7 +14,7 @@ locals {
 data "amazon-ami" "red_hat_8" {
     filters = {
         virtualization-type = "hvm"
-        name = "Packer-backoffice-1-base-shared-*"
+        name = "Packer-backoffice-2-base-shared-*"
         root-device-type = "ebs"
     }
     owners = ["645187175327"]
@@ -41,7 +41,7 @@ source "amazon-ebs" "app" {
   }
   tags = {
     Env  = "${var.env}"
-    Name = "Packer-${var.app_name}-${var.groups}-${var.env}"
+    Name = "Packer-${var.app_name}-${var.groups[1]}-${var.env}"
   }
 }
 
@@ -49,14 +49,14 @@ build {
   sources = ["source.amazon-ebs.app"]
   
   provisioner "ansible" {
-    playbook_file = "../ansible/base.yaml"
-    groups = ["${params.State}"]
+    playbook_file = "../../ansible/base.yaml"
+    groups = "${my_variable}"
+    
     user = "ec2-user"
     local_port = "22"
     use_proxy = false
-    ansible_env_vars = ["ANSIBLE_ROLES_PATH=../../../../_ansible_common/roles","ANSIBLE_NOCOLOR=True"]
-    #extra_arguments = [ "-t", "level1-server"]
-    #pause_before = "120s"
+    ansible_env_vars = ["ANSIBLE_ROLES_PATH=../../../../_ansible_common/roles"]
+    extra_arguments    = ["--extra-vars", "my_variable=staging"]
   }
 
   post-processor "shell-local" {
