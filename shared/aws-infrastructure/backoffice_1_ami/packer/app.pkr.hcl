@@ -54,7 +54,7 @@ build {
   sources = ["source.amazon-ebs.app"]
   
   provisioner "ansible" {
-    playbook_file = "../../ansible/base.yaml"
+    playbook_file = "../ansible/base.yaml"
     // groups = "staging"
     groups = ["dev"]
     user = "ec2-user"
