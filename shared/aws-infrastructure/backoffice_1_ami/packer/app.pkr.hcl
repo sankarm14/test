@@ -1,7 +1,5 @@
 
 build {
-  sources = ["source.amazon-ebs.app"]
-  
   provisioner "ansible" {
     playbook_file = "../../ansible/base.yaml"
     groups = "${var.my_variable}"
