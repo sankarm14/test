@@ -16,6 +16,7 @@ variable "associate_public_ip_address" {
 }
 variable "env" {
     type    = string
+    default = ""
 }
 // variable "groups" {
 //     type = list(string)
