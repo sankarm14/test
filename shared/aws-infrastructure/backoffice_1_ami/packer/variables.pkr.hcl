@@ -18,14 +18,11 @@ variable "env" {
     type    = string
     default = ""
 }
-// variable "groups" {
-//     type = list(string)
-//     default = ["Dev", "Staging", "Prod"]
-// }
-variable "groups" {
-    type = string
-    default = ""
-}
+ variable "groups" {
+     type = list(string)
+     default = ["Dev", "Staging", "Prod"]
+ }
+
 variable "my_variable" {
   type    = string
   default = "dev"
