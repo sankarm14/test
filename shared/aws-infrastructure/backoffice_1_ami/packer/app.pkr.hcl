@@ -50,7 +50,7 @@ build {
   
   provisioner "ansible" {
     playbook_file = "../../ansible/base.yaml"
-    groups = "${my_variable}"
+    groups = "${var.my_variable}"
     
     user = "ec2-user"
     local_port = "22"
