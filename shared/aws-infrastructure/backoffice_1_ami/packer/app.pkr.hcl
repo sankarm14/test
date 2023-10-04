@@ -56,7 +56,7 @@ build {
   provisioner "ansible" {
     playbook_file = "../../ansible/base.yaml"
     // groups = "staging"
-    stage = "${var.env}"
+    groups = "${var.env}"
     user = "ec2-user"
     local_port = "22"
     use_proxy = false
