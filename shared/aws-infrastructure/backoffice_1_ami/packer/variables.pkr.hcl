@@ -23,5 +23,5 @@ variable "env" {
 // }
 variable "groups" {
     type = string
-    default = [""]
+    default = ""
 }
